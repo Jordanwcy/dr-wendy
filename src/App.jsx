@@ -48,62 +48,70 @@ function App() {
   const containerRef = useRef(null)
 
   // --- Background music: slchld – "you won't be there for me" (YouTube embed) ---
+  // Music only starts when she taps the 🔈 button — no auto-start.
   const ytPlayerRef = useRef(null)
+  const wantPlayRef = useRef(false) // she tapped 🔈 before the player was ready
   const [musicOn, setMusicOn] = useState(false)
 
-  useEffect(() => {
+  const startPlayback = useCallback(() => {
+    const p = ytPlayerRef.current
+    if (!p || typeof p.playVideo !== 'function') return
+    p.unMute()
+    p.setVolume(55)
+    p.playVideo()
+    setMusicOn(true)
+  }, [])
+
+  const createPlayer = useCallback(() => {
+    // Guard: StrictMode runs effects twice in dev — never create two players.
+    if (ytPlayerRef.current || !(window.YT && window.YT.Player)) return
     const VIDEO_ID = 'muLqukEiVm4'
-
-    const createPlayer = () => {
-      ytPlayerRef.current = new window.YT.Player('yt-audio', {
-        videoId: VIDEO_ID,
-        playerVars: {
-          autoplay: 0,
-          controls: 0,
-          loop: 1,
-          playlist: VIDEO_ID,
-          playsinline: 1
+    ytPlayerRef.current = new window.YT.Player('yt-audio', {
+      videoId: VIDEO_ID,
+      playerVars: {
+        autoplay: 0,
+        controls: 0,
+        loop: 1,
+        playlist: VIDEO_ID,
+        playsinline: 1
+      },
+      events: {
+        onReady: () => {
+          if (wantPlayRef.current) startPlayback()
         },
-        events: {
-          onReady: () => {
-            const start = () => {
-              const p = ytPlayerRef.current
-              if (!p) return
-              p.unMute()
-              p.setVolume(55)
-              p.playVideo()
-              setMusicOn(true)
-              window.removeEventListener('pointerdown', start)
-            }
-            window.addEventListener('pointerdown', start)
-          },
-          onError: (e) => console.error('[music] error', e.data)
-        }
-      })
-    }
+        onError: (e) => console.error('[music] error', e.data)
+      }
+    })
+  }, [startPlayback])
 
+  useEffect(() => {
     if (window.YT && window.YT.Player) {
       createPlayer()
-    } else {
+      return
+    }
+    // Load the YouTube iframe API once
+    if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
       const tag = document.createElement('script')
       tag.src = 'https://www.youtube.com/iframe_api'
       document.body.appendChild(tag)
-      window.onYouTubeIframeAPIReady = createPlayer
     }
-  }, [])
+    window.onYouTubeIframeAPIReady = createPlayer
+  }, [createPlayer])
 
   const toggleMusic = () => {
-    const p = ytPlayerRef.current
-    if (!p) return
     if (musicOn) {
-      p.pauseVideo()
+      const p = ytPlayerRef.current
+      if (p && typeof p.pauseVideo === 'function') p.pauseVideo()
+      wantPlayRef.current = false
       setMusicOn(false)
-    } else {
-      p.unMute()
-      p.setVolume(55)
-      p.playVideo()
-      setMusicOn(true)
+      return
     }
+    wantPlayRef.current = true
+    if (!ytPlayerRef.current) {
+      createPlayer() // onReady will start playback
+      return
+    }
+    startPlayback()
   }
 
   // Floating hearts
