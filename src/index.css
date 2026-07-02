@@ -202,6 +202,59 @@ button {
   letter-spacing: 0.5px;
 }
 
+/* Scene transitions — each step of the story fades in */
+.scene {
+  animation: sceneIn 0.55s ease both;
+}
+
+@keyframes sceneIn {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Continue button between scenes */
+.btn-next {
+  background: linear-gradient(135deg, var(--coral), var(--gold));
+  color: white;
+}
+
+.btn-next:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 111, 97, 0.4);
+}
+
+/* --- Blooming bouquet scene --- */
+.bouquet {
+  position: relative;
+  height: 170px;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bouquet span {
+  position: absolute;
+  bottom: 0;
+  font-size: 3.2rem;
+  transform-origin: 50% 100%;
+  animation: bloom 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  filter: drop-shadow(0 6px 12px rgba(200, 90, 110, 0.25));
+}
+
+/* Arranged in an arc, blooming one by one */
+.bouquet .f1 { left: calc(50% - 105px); bottom: 8px;  animation-delay: 0.15s; }
+.bouquet .f2 { left: calc(50% - 62px);  bottom: 42px; animation-delay: 0.3s; }
+.bouquet .f3 { left: calc(50% - 26px);  bottom: 64px; font-size: 3.8rem; animation-delay: 0.45s; }
+.bouquet .f4 { left: calc(50% + 22px);  bottom: 42px; animation-delay: 0.6s; }
+.bouquet .f5 { left: calc(50% + 62px);  bottom: 8px;  animation-delay: 0.75s; }
+.bouquet .f6 { left: calc(50% - 22px);  bottom: 0;    font-size: 4.4rem; animation-delay: 0.95s; }
+
+@keyframes bloom {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
 /* Success */
 .success-message {
   animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);

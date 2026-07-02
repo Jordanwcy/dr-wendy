@@ -2,8 +2,21 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import './index.css'
 
 // --- Copy written by Fable 5 ---
+// The page unfolds like the real moment: arrive at the hotel → she sees
+// the flowers → the ask → she said yes.
+
+// Scene 1 — arrival at the Regent
+const ARRIVAL_TITLE = 'Last day in LA. Best stop for last.'
+const ARRIVAL_LINE = 'We’re checked in, the ocean’s right there, and I planned this part carefully.'
+const ARRIVAL_BUTTON = 'come with me →'
+
+// Scene 2 — the flowers
+const FLOWERS_TITLE = 'These are for you.'
+const FLOWERS_LINE = 'For Dr. Wendy — because a doctorate deserves more than a text that says congrats. 💐'
+const FLOWERS_BUTTON = 'wait — one more thing…'
+
+// Scene 3 — the ask
 const EYEBROW = 'Santa Monica · our last LA sunset'
-const CELEBRATION = 'To Dr. Wendy — you actually did it. I’m so proud of you. 🎓'
 const LEAD_IN = 'Before we leave this city, there’s one more thing I need to ask you.'
 const QUESTION = 'Wendy, will you be my girlfriend? 🌅'
 const YES_SUBTITLE = '(you already know I’m hoping)'
@@ -18,14 +31,15 @@ const NO_LABELS = [
   'That button’s shy too 😌'
 ]
 
+// Scene 4 — she said yes
 const SUCCESS_TITLE = 'She said yes 🥂'
-const SUCCESS_SUBTITLE_1 = 'Flowers are already on their way to you 💐'
+const SUCCESS_SUBTITLE_1 = 'The flowers are yours. So am I. 💐'
 const SUCCESS_SUBTITLE_2 = 'Now let’s go catch our last LA sunset.'
 
 const LETTER_TITLE = 'One more thing, Wendy'
 const LETTER = `Wendy — before anything else: you did it. Years of work, and now it's official. Dr. Wendy. I've watched you carry this, and I couldn't be prouder of the woman standing next to me today.
 
-It's our last day in LA, and I didn't want to leave this city without saying what I've been sure of for a while now. The flowers arriving today are for the doctorate. This question is for us.
+It's our last day in LA, and I didn't want to leave this city without saying what I've been sure of for a while now. The flowers in your hands are for the doctorate. This question is for us.
 
 I want to be yours — properly, officially. I want a hundred more sunsets like this one, with you.
 
@@ -35,7 +49,8 @@ const LETTER_SIGNOFF = '— all yours, Jordan 💛'
 const FOOTER = 'Regent Santa Monica Beach · July 6, 2026'
 
 function App() {
-  const [yesPressed, setYesPressed] = useState(false)
+  // The story unfolds in steps: arrival → flowers → ask → yes
+  const [step, setStep] = useState('arrival')
   const [noPos, setNoPos] = useState({ top: 'auto', left: 'auto', position: 'relative' })
   const [btnSize, setBtnSize] = useState(null)
   // Each dodge shrinks "No" and grows "Yes" so it's impossible to tap on a phone
@@ -149,9 +164,9 @@ function App() {
     setNoPos({ position: 'absolute', left: `${randomX}px`, top: `${randomY}px` })
   }, [])
 
-  // Proximity trigger (desktop)
+  // Proximity trigger (desktop) — only while the question is on screen
   useEffect(() => {
-    if (yesPressed) return
+    if (step !== 'ask') return
     const handleMouseMove = (e) => {
       if (!noBtnRef.current) return
       const r = noBtnRef.current.getBoundingClientRect()
@@ -162,11 +177,11 @@ function App() {
     }
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [yesPressed, moveButton])
+  }, [step, moveButton])
 
-  // Confetti on "Yes"
+  // Confetti when she says yes
   useEffect(() => {
-    if (yesPressed && confettiCanvasRef.current) {
+    if (step === 'yes' && confettiCanvasRef.current) {
       const canvas = confettiCanvasRef.current
       const ctx = canvas.getContext('2d')
       canvas.width = window.innerWidth
@@ -221,7 +236,7 @@ function App() {
       window.addEventListener('resize', onResize)
       return () => window.removeEventListener('resize', onResize)
     }
-  }, [yesPressed])
+  }, [step])
 
   // Reusable CSS sunset scene
   const SunsetHero = () => (
@@ -230,6 +245,18 @@ function App() {
       <div className="ocean">
         <div className="shimmer" />
       </div>
+    </div>
+  )
+
+  // Blooming bouquet for the flowers scene
+  const Bouquet = () => (
+    <div className="bouquet" aria-hidden="true">
+      <span className="f1">🌷</span>
+      <span className="f2">🌸</span>
+      <span className="f3">🌹</span>
+      <span className="f4">🌺</span>
+      <span className="f5">🌷</span>
+      <span className="f6">💐</span>
     </div>
   )
 
@@ -258,18 +285,44 @@ function App() {
         ))}
       </div>
 
-      {!yesPressed ? (
-        <div className="container" ref={containerRef}>
+      {step === 'arrival' && (
+        <div className="container scene">
+          <SunsetHero />
+          <p className="eyebrow">{FOOTER}</p>
+          <h1>{ARRIVAL_TITLE}</h1>
+          <p className="lead-in">{ARRIVAL_LINE}</p>
+          <div className="buttons">
+            <button className="btn-next" onClick={() => setStep('flowers')}>
+              {ARRIVAL_BUTTON}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 'flowers' && (
+        <div className="container scene">
+          <Bouquet />
+          <h1>{FLOWERS_TITLE}</h1>
+          <p className="lead-in">{FLOWERS_LINE}</p>
+          <div className="buttons">
+            <button className="btn-next" onClick={() => setStep('ask')}>
+              {FLOWERS_BUTTON}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 'ask' && (
+        <div className="container scene" ref={containerRef}>
           <SunsetHero />
           <p className="eyebrow">{EYEBROW}</p>
-          <h2 className="celebration">{CELEBRATION}</h2>
           <p className="lead-in">{LEAD_IN}</p>
           <h1>{QUESTION}</h1>
           <div className="buttons">
             <button
               className="btn-yes"
               style={{ transform: `scale(${1 + dodgeCount * 0.15})` }}
-              onClick={() => setYesPressed(true)}
+              onClick={() => setStep('yes')}
             >
               Yes 💛
             </button>
@@ -289,9 +342,10 @@ function App() {
             </button>
           </div>
           <p className="yes-subtitle">{YES_SUBTITLE}</p>
-          <p className="footer-line">{FOOTER}</p>
         </div>
-      ) : (
+      )}
+
+      {step === 'yes' && (
         <>
           <div className="container success-message" style={{ display: 'block' }}>
             <SunsetHero />
