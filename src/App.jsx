@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import './index.css'
+import beachImg from './assets/beach_date.png'
+import regentImg from './assets/regent_flowers.png'
 
 // --- Copy written by Fable 5 ---
 // The page unfolds like the real moment: arrive at the hotel → she sees
@@ -248,18 +250,6 @@ function App() {
     </div>
   )
 
-  // Blooming bouquet for the flowers scene
-  const Bouquet = () => (
-    <div className="bouquet" aria-hidden="true">
-      <span className="f1">🌷</span>
-      <span className="f2">🌸</span>
-      <span className="f3">🌹</span>
-      <span className="f4">🌺</span>
-      <span className="f5">🌷</span>
-      <span className="f6">💐</span>
-    </div>
-  )
-
   return (
     <>
       {/* Hidden YouTube audio player + music toggle */}
@@ -287,7 +277,7 @@ function App() {
 
       {step === 'arrival' && (
         <div className="container scene">
-          <SunsetHero />
+          <img src={beachImg} alt="Santa Monica beach" className="scene-img" />
           <p className="eyebrow">{FOOTER}</p>
           <h1>{ARRIVAL_TITLE}</h1>
           <p className="lead-in">{ARRIVAL_LINE}</p>
@@ -301,7 +291,7 @@ function App() {
 
       {step === 'flowers' && (
         <div className="container scene">
-          <Bouquet />
+          <img src={regentImg} alt="Flowers at the Regent" className="scene-img" />
           <h1>{FLOWERS_TITLE}</h1>
           <p className="lead-in">{FLOWERS_LINE}</p>
           <div className="buttons">
