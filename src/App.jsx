@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import './index.css'
 import beachImg from './assets/beach_date.png'
 import regentImg from './assets/regent_flowers.png'
+import saidYesImg from './assets/she_said_yes.png'
 import la1 from './assets/la/la1.jpg'
 import la2 from './assets/la/la2.jpg'
 import la3 from './assets/la/la3.jpg'
@@ -39,11 +40,7 @@ const NO_LABELS = [
   'That button’s shy too 😌'
 ]
 
-// Scene 3 — she said yes
-const SUCCESS_TITLE = 'She said yes 🥂'
-const SUCCESS_SUBTITLE_1 = 'The flowers are yours. So am I. 💐'
-const SUCCESS_SUBTITLE_2 = 'Now let’s go catch our last LA sunset.'
-const GALLERY_LABEL = 'us, in LA · my favorite frames 🌴'
+// Scene 3 — she said yes (headline/subtitle/gallery label live in the cover art)
 
 const LETTER_TITLE = 'One more thing, Wendy'
 const LETTER = `Wendy — before anything else: you did it. Years of work, and now it's official. Dr. Wendy. I've watched you carry this, and I couldn't be prouder of the woman standing next to me today.
@@ -71,8 +68,10 @@ function App() {
   const noBtnRef = useRef(null)
   const containerRef = useRef(null)
 
-  // --- Background music: slchld – "you won't be there for me" (YouTube embed) ---
+  // --- Background music: 34XP – "beachfront" (YouTube embed) ---
   // Music only starts when she taps the 🔈 button — no auto-start.
+  // The player lives outside the scenes, so the track keeps playing
+  // uninterrupted across all three screens.
   const ytPlayerRef = useRef(null)
   const wantPlayRef = useRef(false) // she tapped 🔈 before the player was ready
   const [musicOn, setMusicOn] = useState(false)
@@ -89,7 +88,7 @@ function App() {
   const createPlayer = useCallback(() => {
     // Guard: StrictMode runs effects twice in dev — never create two players.
     if (ytPlayerRef.current || !(window.YT && window.YT.Player)) return
-    const VIDEO_ID = 'muLqukEiVm4'
+    const VIDEO_ID = 'yeej9ICxH1M'
     ytPlayerRef.current = new window.YT.Player('yt-audio', {
       videoId: VIDEO_ID,
       playerVars: {
@@ -247,16 +246,6 @@ function App() {
     }
   }, [step])
 
-  // Reusable CSS sunset scene
-  const SunsetHero = () => (
-    <div className="sunset-hero">
-      <div className="sun" />
-      <div className="ocean">
-        <div className="shimmer" />
-      </div>
-    </div>
-  )
-
   return (
     <>
       {/* Hidden YouTube audio player + music toggle */}
@@ -332,16 +321,14 @@ function App() {
       {step === 'yes' && (
         <>
           <div className="container success-message" style={{ display: 'block' }}>
-            <SunsetHero />
-            <h1 className="success-text">{SUCCESS_TITLE}</h1>
-            <p className="sub-text">
-              {SUCCESS_SUBTITLE_1}
-              <br />
-              {SUCCESS_SUBTITLE_2}
-            </p>
+            {/* Cover art carries the headline, subtitle and gallery label */}
+            <img
+              src={saidYesImg}
+              alt="She said yes — watching our last LA sunset"
+              className="success-cover"
+            />
 
             {/* Our LA — polaroid memory wall */}
-            <p className="eyebrow gallery-label">{GALLERY_LABEL}</p>
             <div className="gallery">
               {LA_PHOTOS.map((src, i) => (
                 <figure

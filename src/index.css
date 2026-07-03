@@ -240,6 +240,16 @@ button {
   box-shadow: 0 8px 24px rgba(60, 20, 50, 0.2);
 }
 
+/* "She said yes" finale cover — text is baked into the art, never crop it */
+.success-cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 24px rgba(60, 20, 50, 0.2);
+}
+
 /* Success */
 .success-message {
   animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
