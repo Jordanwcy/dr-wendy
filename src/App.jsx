@@ -2,24 +2,30 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import './index.css'
 import beachImg from './assets/beach_date.png'
 import regentImg from './assets/regent_flowers.png'
+import la1 from './assets/la/la1.jpg'
+import la2 from './assets/la/la2.jpg'
+import la3 from './assets/la/la3.jpg'
+import la4 from './assets/la/la4.jpg'
+import la5 from './assets/la/la5.jpg'
+import la6 from './assets/la/la6.jpg'
+import la7 from './assets/la/la7.jpg'
+import la8 from './assets/la/la8.jpg'
+import la9 from './assets/la/la9.jpg'
+import la10 from './assets/la/la10.jpg'
 
-// --- Copy written by Fable 5 ---
-// The page unfolds like the real moment: arrive at the hotel → she sees
-// the flowers → the ask → she said yes.
+const LA_PHOTOS = [la1, la2, la3, la4, la5, la6, la7, la8, la9, la10]
+
+// --- Copy written by Fable 5 (edited per Jordan) ---
+// Flow mirrors the real moment: arrive → the flowers + the ask → she said yes.
 
 // Scene 1 — arrival at the Regent
 const ARRIVAL_TITLE = 'Last day in LA. Best stop for last.'
 const ARRIVAL_LINE = 'We’re checked in, the ocean’s right there, and I planned this part carefully.'
 const ARRIVAL_BUTTON = 'come with me →'
 
-// Scene 2 — the flowers
-const FLOWERS_TITLE = 'These are for you.'
-const FLOWERS_LINE = 'For Dr. Wendy — because a doctorate deserves more than a text that says congrats. 💐'
-const FLOWERS_BUTTON = 'wait — one more thing…'
-
-// Scene 3 — the ask
-const EYEBROW = 'Santa Monica · our last LA sunset'
-const LEAD_IN = 'Before we leave this city, there’s one more thing I need to ask you.'
+// Scene 2 — the flowers + the ask
+const ASK_TITLE = 'These are for you.'
+const ASK_LINE = 'Dr. Wendy, thank you for coming into my life.'
 const QUESTION = 'Wendy, will you be my girlfriend? 🌅'
 const YES_SUBTITLE = '(you already know I’m hoping)'
 
@@ -33,10 +39,11 @@ const NO_LABELS = [
   'That button’s shy too 😌'
 ]
 
-// Scene 4 — she said yes
+// Scene 3 — she said yes
 const SUCCESS_TITLE = 'She said yes 🥂'
 const SUCCESS_SUBTITLE_1 = 'The flowers are yours. So am I. 💐'
 const SUCCESS_SUBTITLE_2 = 'Now let’s go catch our last LA sunset.'
+const GALLERY_LABEL = 'us, in LA · my favorite frames 🌴'
 
 const LETTER_TITLE = 'One more thing, Wendy'
 const LETTER = `Wendy — before anything else: you did it. Years of work, and now it's official. Dr. Wendy. I've watched you carry this, and I couldn't be prouder of the woman standing next to me today.
@@ -51,7 +58,7 @@ const LETTER_SIGNOFF = '— all yours, Jordan 💛'
 const FOOTER = 'Regent Santa Monica Beach · July 6, 2026'
 
 function App() {
-  // The story unfolds in steps: arrival → flowers → ask → yes
+  // The story unfolds in steps: arrival → ask → yes
   const [step, setStep] = useState('arrival')
   const [noPos, setNoPos] = useState({ top: 'auto', left: 'auto', position: 'relative' })
   const [btnSize, setBtnSize] = useState(null)
@@ -282,21 +289,8 @@ function App() {
           <h1>{ARRIVAL_TITLE}</h1>
           <p className="lead-in">{ARRIVAL_LINE}</p>
           <div className="buttons">
-            <button className="btn-next" onClick={() => setStep('flowers')}>
-              {ARRIVAL_BUTTON}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === 'flowers' && (
-        <div className="container scene">
-          <img src={regentImg} alt="Flowers at the Regent" className="scene-img" />
-          <h1>{FLOWERS_TITLE}</h1>
-          <p className="lead-in">{FLOWERS_LINE}</p>
-          <div className="buttons">
             <button className="btn-next" onClick={() => setStep('ask')}>
-              {FLOWERS_BUTTON}
+              {ARRIVAL_BUTTON}
             </button>
           </div>
         </div>
@@ -304,9 +298,9 @@ function App() {
 
       {step === 'ask' && (
         <div className="container scene" ref={containerRef}>
-          <SunsetHero />
-          <p className="eyebrow">{EYEBROW}</p>
-          <p className="lead-in">{LEAD_IN}</p>
+          <img src={regentImg} alt="Flowers at the Regent" className="scene-img" />
+          <h2 className="celebration">{ASK_TITLE}</h2>
+          <p className="lead-in">{ASK_LINE}</p>
           <h1>{QUESTION}</h1>
           <div className="buttons">
             <button
@@ -345,6 +339,20 @@ function App() {
               <br />
               {SUCCESS_SUBTITLE_2}
             </p>
+
+            {/* Our LA — polaroid memory wall */}
+            <p className="eyebrow gallery-label">{GALLERY_LABEL}</p>
+            <div className="gallery">
+              {LA_PHOTOS.map((src, i) => (
+                <figure
+                  key={i}
+                  className="polaroid"
+                  style={{ animationDelay: `${0.15 + i * 0.12}s` }}
+                >
+                  <img src={src} alt={`Us in LA ${i + 1}`} loading="lazy" />
+                </figure>
+              ))}
+            </div>
 
             {!letterOpen ? (
               <button className="letter-open" onClick={() => setLetterOpen(true)}>
